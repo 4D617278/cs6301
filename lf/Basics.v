@@ -1317,8 +1317,14 @@ Proof.
   destruct b.
   - destruct c.
   	+ reflexivity.
-	+ reflexivity. 
-  - intros H.
+	+ intros H.
+	rewrite <- H.
+	reflexivity.
+  - destruct c.
+	+ intros H.
+	rewrite <- H.
+	reflexivity.
+	+ intros H.
 	rewrite <- H.
 	reflexivity.
   Qed.
@@ -1362,7 +1368,10 @@ Qed.
 Theorem zero_nbeq_plus_1 : forall n : nat,
   0 =? (n + 1) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros [].
+  - reflexivity.
+  - reflexivity.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -1446,9 +1455,11 @@ Fixpoint plus' (n : nat) (m : nat) : nat :=
     out your solution so that it doesn't cause Coq to reject the whole
     file!) *)
 
-(* FILL IN HERE
-
-    [] *)
+(*
+Fixpoint fact (n : nat) : nat :=
+  if n <=? 1 then 1
+  else n * fact (n - 1).
+*)
 
 (* ################################################################# *)
 (** * More Exercises *)
@@ -1463,7 +1474,11 @@ Theorem identity_fn_applied_twice :
   (forall (x : bool), f x = x) ->
   forall (b : bool), f (f b) = b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f H b.
+  rewrite -> H.
+  rewrite -> H.
+  reflexivity.
+Qed.
 
 (** [] *)
 
@@ -1473,7 +1488,17 @@ Proof.
     to the previous one but where the second hypothesis says that the
     function [f] has the property that [f x = negb x]. *)
 
-(* FILL IN HERE *)
+Theorem negation_fn_applied_twice :
+  forall (f : bool -> bool),
+  (forall (x : bool), f x = negb x) ->
+  forall (b : bool), f (f b) = b.
+Proof.
+  intros f H b.
+  rewrite -> H.
+  rewrite -> H.
+  rewrite -> negb_involutive.
+  reflexivity.
+Qed.
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_negation_fn_applied_twice : option (nat*string) := None.
@@ -1488,12 +1513,27 @@ Definition manual_grade_for_negation_fn_applied_twice : option (nat*string) := N
     [destruct] and [rewrite], but destructing everything in sight is
     not the best way.) *)
 
+Theorem orb_true_elim2 : forall b : bool,
+  orb true b = true.
+Proof.
+  intros b.
+  destruct b.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
 Theorem andb_eq_orb :
   forall (b c : bool),
   (andb b c = orb b c) ->
   b = c.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b.
+  destruct b.
+  - intros c H.
+    (* rewrite -> orb_true_elim2. *)
+    reflexivity.
+  - reflexivity.
+Qed.
 
 (** [] *)
 
