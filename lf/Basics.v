@@ -1522,17 +1522,48 @@ Proof.
   - reflexivity.
 Qed.
 
+Theorem andb_true_elim : forall b : bool,
+  andb true b = b.
+Proof.
+  intros b.
+  destruct b.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
+Theorem andb_false_elim : forall b : bool,
+  andb false b = false.
+Proof.
+  intros b.
+  destruct b.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
+Theorem orb_false_elim : forall b : bool,
+  orb false b = b.
+Proof.
+  intros b.
+  destruct b.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
 Theorem andb_eq_orb :
   forall (b c : bool),
   (andb b c = orb b c) ->
   b = c.
 Proof.
-  intros b.
+  intros b c H.
   destruct b.
-  - intros c H.
-    (* rewrite -> orb_true_elim2. *)
+  - rewrite -> orb_true_elim2 in H.
+    rewrite -> andb_true_elim in H.
+    rewrite -> H.
     reflexivity.
-  - reflexivity.
+  - rewrite -> andb_false_elim in H.
+    rewrite -> orb_false_elim in H.
+    rewrite <- H.
+    reflexivity.
 Qed.
 
 (** [] *)
@@ -1572,11 +1603,19 @@ Inductive bin : Type :=
     for binary numbers, and a function [bin_to_nat] to convert
     binary numbers to unary numbers. *)
 
-Fixpoint incr (m:bin) : bin
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint incr (m:bin) : bin :=
+  match m with
+  | Z => B1 Z
+  | B0 B => B1 B
+  | B1 B => B0 (incr B)
+  end.
 
-Fixpoint bin_to_nat (m:bin) : nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint bin_to_nat (m:bin) : nat :=
+  match m with
+  | Z => 0
+  | B0 B => 2 * (bin_to_nat B)
+  | B1 B => 2 * (bin_to_nat B) + 1
+  end.
 
 (** The following "unit tests" of your increment and binary-to-unary
     functions should pass after you have defined those functions correctly.
@@ -1585,24 +1624,24 @@ Fixpoint bin_to_nat (m:bin) : nat
     next chapter. *)
 
 Example test_bin_incr1 : (incr (B1 Z)) = B0 (B1 Z).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Example test_bin_incr2 : (incr (B0 (B1 Z))) = B1 (B1 Z).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Example test_bin_incr3 : (incr (B1 (B1 Z))) = B0 (B0 (B1 Z)).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Example test_bin_incr4 : bin_to_nat (B0 (B1 Z)) = 2.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Example test_bin_incr5 :
         bin_to_nat (incr (B1 Z)) = 1 + bin_to_nat (B1 Z).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Example test_bin_incr6 :
         bin_to_nat (incr (incr (B1 Z))) = 2 + bin_to_nat (B1 Z).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 (** [] *)
 
