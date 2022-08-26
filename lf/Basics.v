@@ -1313,21 +1313,17 @@ Qed.
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
 Proof.
-  intros b.
+  intros b c H.
   destruct b.
-  - destruct c.
-  	+ reflexivity.
-	+ intros H.
-	rewrite <- H.
-	reflexivity.
-  - destruct c.
-	+ intros H.
-	rewrite <- H.
-	reflexivity.
-	+ intros H.
-	rewrite <- H.
-	reflexivity.
-  Qed.
+  - simpl in H.
+  rewrite -> H.
+  reflexivity.
+  - simpl in H.
+    destruct c.
+    + reflexivity.
+    + rewrite <- H.
+    reflexivity.
+Qed.
 (** [] *)
 
 (** Before closing the chapter, let's mention one final
@@ -1513,42 +1509,6 @@ Definition manual_grade_for_negation_fn_applied_twice : option (nat*string) := N
     [destruct] and [rewrite], but destructing everything in sight is
     not the best way.) *)
 
-Theorem orb_true_elim2 : forall b : bool,
-  orb true b = true.
-Proof.
-  intros b.
-  destruct b.
-  - reflexivity.
-  - reflexivity.
-Qed.
-
-Theorem andb_true_elim : forall b : bool,
-  andb true b = b.
-Proof.
-  intros b.
-  destruct b.
-  - reflexivity.
-  - reflexivity.
-Qed.
-
-Theorem andb_false_elim : forall b : bool,
-  andb false b = false.
-Proof.
-  intros b.
-  destruct b.
-  - reflexivity.
-  - reflexivity.
-Qed.
-
-Theorem orb_false_elim : forall b : bool,
-  orb false b = b.
-Proof.
-  intros b.
-  destruct b.
-  - reflexivity.
-  - reflexivity.
-Qed.
-
 Theorem andb_eq_orb :
   forall (b c : bool),
   (andb b c = orb b c) ->
@@ -1556,12 +1516,10 @@ Theorem andb_eq_orb :
 Proof.
   intros b c H.
   destruct b.
-  - rewrite -> orb_true_elim2 in H.
-    rewrite -> andb_true_elim in H.
+  - simpl in H.
     rewrite -> H.
     reflexivity.
-  - rewrite -> andb_false_elim in H.
-    rewrite -> orb_false_elim in H.
+  - simpl in H.
     rewrite <- H.
     reflexivity.
 Qed.
