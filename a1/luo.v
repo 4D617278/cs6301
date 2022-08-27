@@ -63,21 +63,30 @@ The first "bool_eq" attempt fails because propositions in consistent systems can
 (*
 Definition bool_eq (b1 b2 : bool) :=
   match b1 with
-  | b2 => false
+  | b2 => true
   | _ => false
   end.
 
 Error: Pattern "_" is redundant in this clause.
 
-The second "bool_eq" attempt fails because .
+The second "bool_eq" attempt fails because b2 is a variable pattern that copies the value of b1 and matches any value, which makes the "_" pattern is redundant.
 
 *)
 
 (* 7c. Implement a correct "bool_eq" here. *)
 Definition bool_eq (b1 b2 : bool) :=
-  match b1 with
-  | b2 => false
+  match b1, b2 with
+  | true, true => true
+  | true, false => false
+  | false, true => false
+  | false, false => true
   end.
+
+Theorem b1_eq_b2 : forall b1 b2 : bool, 
+  bool_eq b1 b2 = eqb b1 b2.
+Proof.
+  reflexivity.
+Qed.
 
 (* 8. Define "rem" here. *)
 (*
