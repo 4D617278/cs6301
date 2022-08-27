@@ -56,7 +56,7 @@ Definition bool_eq (b1 b2 : bool) :=
 
 Error: The term "b1 = b2" has type "Prop" which is not a (co-)inductive type.
 
-The first "bool_eq" attempt fails because .
+The first "bool_eq" attempt fails because propositions in consistent systems can be undecidable (incompleteness theorem) and Coq is designed to halt on all inputs. Computing the equality of (co-)inductive types is decidable because we can repeatedly decompose any (co-)inductive type until it is in an irreducible form. In this form equality can be computed.
 *)
 
 (* 7b. Explain why second "bool_eq" attempt fails. *)
