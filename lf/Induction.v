@@ -199,22 +199,48 @@ Proof.
 Theorem mul_0_r : forall n:nat,
   n * 0 = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - simpl.
+    rewrite -> IHn'.
+    reflexivity.
+Qed.
 
 Theorem plus_n_Sm : forall n m : nat,
   S (n + m) = n + (S m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - simpl. 
+    rewrite -> IHn'.
+    reflexivity.
+Qed.
 
 Theorem add_comm : forall n m : nat,
   n + m = m + n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  induction n as [| n' IHn'].
+  - simpl. 
+    rewrite -> add_0_r.
+    reflexivity.
+  - simpl.
+    rewrite -> IHn'.
+    rewrite -> plus_n_Sm.
+    reflexivity.
+Qed.
 
 Theorem add_assoc : forall n m p : nat,
   n + (m + p) = (n + m) + p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - simpl. 
+    rewrite <- IHn'.
+    reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (double_plus)
@@ -231,7 +257,13 @@ Fixpoint double (n:nat) :=
 
 Lemma double_plus : forall n, double n = n + n .
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - simpl.
+    rewrite -> IHn'.
+    rewrite -> plus_n_Sm.
+    reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (eqb_refl)
@@ -241,7 +273,10 @@ Proof.
 Theorem eqb_refl : forall n : nat,
   (n =? n) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - simpl. rewrite -> IHn'. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (even_S)
@@ -256,7 +291,12 @@ Proof.
 Theorem even_S : forall n : nat,
   even (S n) = negb (even n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - rewrite -> IHn'. 
+	rewrite -> negb_involutive.
+    reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard, optional (destruct_induction)
@@ -265,6 +305,7 @@ Proof.
     and [induction].
 
 (* FILL IN HERE *)
+  The size of the set of subgoals output by the destruct tactic is equivalent to the size of the set of the parameter space while the size of the set of subgoals output by the induction tactic is 2.
 *)
 
 (** [] *)
@@ -461,7 +502,27 @@ Proof.
 
     Theorem: Addition is commutative.
 
-    Proof: (* FILL IN HERE *)
+    Proof: (* 
+		Axioms:
+		0 + m = m
+
+		Definition of addition:
+		m + 0 = m
+		m + 1 + n = 1 + m + n
+
+		n + m = m + n
+		
+		Induction on n. 
+		(n = 0)
+		- 0 + m = m + 0
+		- m = m + 0
+		- m = m
+
+		(n + m = m + n)
+		- 1 + n + m = m + 1 + n.
+		- 1 + m + n = m + 1 + n.
+		- m + 1 + n = m + 1 + n.
+	*)
 *)
 
 (* Do not modify the following line: *)
@@ -476,7 +537,18 @@ Definition manual_grade_for_add_comm_informal : option (nat*string) := None.
 
     Theorem: [(n =? n) = true] for any [n].
 
-    Proof: (* FILL IN HERE *)
+    Proof: (* 
+	(n =? n) = true
+
+	Induction on n
+	(n = 0)
+  	- (0 =? 0) = true
+  	- true = true
+	((n =? n) = true)
+	- (n + 1 =? n + 1) = true
+	- (n =? n) = true
+	- true = true
+	*)
 *)
 
 (* Do not modify the following line: *)
@@ -494,16 +566,37 @@ Definition manual_grade_for_eqb_refl_informal : option (nat*string) := None.
 Theorem add_shuffle3 : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  rewrite -> add_assoc.
+  rewrite -> add_assoc.
+  assert (H: n + m = m + n).
+  { rewrite -> add_comm. reflexivity. }
+  rewrite -> H.
+  reflexivity.
+Qed.
 
 (** Now prove commutativity of multiplication.  You will probably want
     to look for (or define and prove) a "helper" theorem to be used in
     the proof of this one. Hint: what is [n * (1 + k)]? *)
 
+Theorem mul_n_1_k: forall n k : nat,
+  n * (1 + k) = n + (k * n).
+Proof.
+  intros n k.
+  induction n as [| n' IHn'].
+  - simpl. rewrite -> mul_0_r. reflexivity.
+  - simpl. 
+    reflexivity.
+Qed.
+
 Theorem mul_comm : forall m n : nat,
   m * n = n * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros m n.
+  induction m as [| m' IHm'].
+  - simpl. rewrite -> mul_0_r. reflexivity.
+  - reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (plus_leb_compat_l)
