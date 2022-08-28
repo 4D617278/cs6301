@@ -94,7 +94,10 @@ Fixpoint rem (r : rexp) (b : bool) : rexp :=
   | Empty, _ => Empty
   | Epsilon, _ => Empty
   | Sym b1, b2 => if (bool_eq b1 b2) then Epsilon else Empty
-  | Cat r1 r2, b => Cat (rem r1 b) r2
+  | Cat r1 r2, b => match (matches_nil r1), r2 with
+  					| true, Sym b => Plus Epsilon (Cat (rem r1 b) r2) 
+  					| _, _ => Cat (rem r1 b) r2
+					end
   | Plus r1 r2, b => Plus (rem r1 b) (rem r2 b)
   | Star r, b => Star (rem r b)
   end.
@@ -105,5 +108,6 @@ Theorem rem_cat_nil_sym:
 Proof.
   intros b r H.
   simpl.
+  rewrite -> H.
   reflexivity.
 Qed.
