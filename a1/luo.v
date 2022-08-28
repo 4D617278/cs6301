@@ -89,23 +89,21 @@ Proof.
 Qed.
 
 (* 8. Define "rem" here. *)
-(*
 Fixpoint rem (r : rexp) (b : bool) : rexp :=
-  match r with
-  | Sym b r1 => r1
-  | Cat r1 r2 => rem r1
-  | Plus r1 r2 => Plus (rem r1) (rem r2)
-  | Star r => Star (rem r)
-  | _ => Empty
+  match r, b with
+  | Empty, _ => Empty
+  | Epsilon, _ => Empty
+  | Sym b1, b2 => if (bool_eq b1 b2) then Epsilon else Empty
+  | Cat r1 r2, b => Cat (rem r1 b) r2
+  | Plus r1 r2, b => Plus (rem r1 b) (rem r2 b)
+  | Star r, b => Star (rem r b)
   end.
-*)
 
-(*
 Theorem rem_cat_nil_sym:
   forall b r, matches_nil r = true ->
     matches_nil (rem (Cat r (Sym b)) b) = true.
 Proof.
   intros b r H.
+  simpl.
   reflexivity.
 Qed.
-*)
