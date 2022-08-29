@@ -580,12 +580,18 @@ Qed.
     the proof of this one. Hint: what is [n * (1 + k)]? *)
 
 Theorem mul_n_1_k: forall n k : nat,
-  n * (1 + k) = n + (k * n).
+  n * (S k) = n + (n * k).
 Proof.
   intros n k.
   induction n as [| n' IHn'].
-  - simpl. rewrite -> mul_0_r. reflexivity.
+  - simpl. reflexivity.
   - simpl. 
+    assert(H: n' + k = k + n').
+    { rewrite -> add_comm. reflexivity. }
+    rewrite -> add_assoc.
+    rewrite -> H.
+    rewrite -> IHn'.
+    rewrite -> add_assoc.
     reflexivity.
 Qed.
 
@@ -595,7 +601,10 @@ Proof.
   intros m n.
   induction m as [| m' IHm'].
   - simpl. rewrite -> mul_0_r. reflexivity.
-  - reflexivity.
+  - simpl. 
+  rewrite -> IHm'. 
+  rewrite -> mul_n_1_k. 
+  reflexivity.
 Qed.
 (** [] *)
 
