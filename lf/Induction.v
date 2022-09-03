@@ -681,17 +681,43 @@ Theorem all3_spec : forall b c : bool,
          (negb c))
   = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c.
+  destruct b.
+  - simpl. destruct c.
+    + simpl. reflexivity.
+    + simpl. reflexivity.
+  - simpl. reflexivity.
+Qed.
 
 Theorem mult_plus_distr_r : forall n m p : nat,
   (n + m) * p = (n * p) + (m * p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  induction p as [| p' IHp'].
+  - simpl. 
+    rewrite !mul_0_r.
+    reflexivity.
+  - simpl. 
+    rewrite !mul_n_1_k.
+    rewrite add_assoc.
+    replace (n + n * p' + m) with (n + m + n * p').
+    + rewrite -> IHp'. rewrite add_assoc. reflexivity.
+    + replace (n + n * p') with (n * p' + n).
+    { rewrite add_comm. rewrite add_assoc. reflexivity. }
+    { rewrite add_comm. reflexivity. }
+Qed.
 
 Theorem mult_assoc : forall n m p : nat,
   n * (m * p) = (n * m) * p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  induction n as [| n' IHn'].
+  - reflexivity.
+  - simpl.
+    rewrite mult_plus_distr_r.
+    rewrite IHn'.
+    reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (add_shuffle3')
@@ -708,7 +734,13 @@ Proof.
 Theorem add_shuffle3' : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  rewrite add_assoc.
+  rewrite add_assoc.
+  replace (n + m) with (m + n).
+  - simpl. reflexivity.
+  - rewrite add_comm. simpl. reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -726,11 +758,19 @@ Inductive bin : Type :=
     from [Basics].  That will make it possible for this file to
     be graded on its own. *)
 
-Fixpoint incr (m:bin) : bin
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint incr (m:bin) : bin :=
+  match m with
+  | Z => B1 Z
+  | B0 B => B1 B
+  | B1 B => B0 (incr B)
+  end.
 
-Fixpoint bin_to_nat (m:bin) : nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint bin_to_nat (m:bin) : nat :=
+  match m with
+  | Z => 0
+  | B0 B => 2 * (bin_to_nat B)
+  | B1 B => 2 * (bin_to_nat B) + 1
+  end.
 
 (** In [Basics], we did some unit testing of [bin_to_nat], but we
     didn't prove its correctness. Now we'll do so. *)
