@@ -980,18 +980,6 @@ Qed.
     Hint 2: Lemma [double_incr_bin] that you proved above will be
     helpful, too.*)
 
-Lemma double_bin_to_nat : forall b, bin_to_nat b + bin_to_nat b = bin_to_nat (double_bin b).
-Proof.
-  induction b as [| b' IHb' | b2' IHb2'].
-  - simpl. reflexivity.
-  - simpl. 
-  rewrite !add_0_r.
-  reflexivity.
-  - simpl. 
-  rewrite !add_0_r.
-  reflexivity.
-Qed.
-
 Lemma nat_to_bin_incr : forall n,
   incr (nat_to_bin n) = nat_to_bin (n + 1).
 Proof.
@@ -1003,11 +991,16 @@ Qed.
 Lemma nat_to_bin_double_incr : forall n,
   incr (nat_to_bin (2 * n)) = nat_to_bin (2 * n + 1).
 Proof.
-  induction n as [| n' IHn'].
-  - simpl. reflexivity.
-  - simpl. 
-  rewrite add_0_r.
+  intros n.
   rewrite nat_to_bin_incr.
+  reflexivity.
+Qed.
+
+Lemma double_bin_to_nat : forall b, bin_to_nat b + bin_to_nat b = 2 * bin_to_nat b.
+Proof.
+  intros b.
+  simpl. 
+  rewrite add_0_r. 
   reflexivity.
 Qed.
 
@@ -1028,31 +1021,19 @@ Proof.
   + rewrite add_comm. reflexivity.
 Qed.
 
-Lemma double_bin_double : forall b, bin_to_nat (double_bin b) = 2 * bin_to_nat b.
-Proof.
-  induction b as [| b IHb' | b2' IHb2'].
-  - simpl. reflexivity.
-  - simpl. reflexivity.
-  - simpl. reflexivity.
-Qed.
-
 Theorem bin_nat_bin : forall b, nat_to_bin (bin_to_nat b) = normalize b.
 Proof.
   induction b as [| b1' IHb1' | b2' IHb2'].
   - simpl. reflexivity.
   - simpl. 
   rewrite add_0_r.
-  Show.
   rewrite double_bin_to_nat.
-  rewrite double_bin_double.
   rewrite double_nat_to_bin.
   rewrite IHb1'. 
   reflexivity.
   - simpl. 
   rewrite add_0_r.
-  Show.
   rewrite double_bin_to_nat.
-  rewrite double_bin_double.
   rewrite <- nat_to_bin_double_incr.
   rewrite double_nat_to_bin.
   rewrite IHb2'.
