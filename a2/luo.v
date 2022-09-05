@@ -108,7 +108,15 @@ Proof.
 Qed.
 
 (* 7. Explain why (nat_to_bin (bin_to_nat b)) = b is not a true theorem. *)
-(* b' B0* Z = b' Z *)
+(* 
+   bin_to_nat b' B0* Z = bin_to_nat b' Z
+
+   nat_to_bin (bin_to_nat b' B0* Z) = nat_to_bin (bin_to_nat b' Z)
+
+   b' B0* Z = b' Z 	(nat_to_bin (bin_to_nat b) = b)
+   
+   contradiction.
+*)
 
 (* 8. Define "normalize" here. *)
 Definition double_bin (b:bin) : bin :=
