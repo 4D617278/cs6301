@@ -70,10 +70,6 @@ Proof.
     reflexivity.
 Qed.
 
-Theorem plus_1_l : forall n:nat, 1 + n = S n.
-Proof.
-  intros n. reflexivity.  Qed.
-
 Theorem bin_to_nat_pres_incr:
   forall b, bin_to_nat (incr b) = S (bin_to_nat b).
 Proof.
@@ -81,11 +77,8 @@ Proof.
   - simpl. reflexivity.
   - simpl. 
   rewrite !add_0_r.
-  rewrite plus_n_Sm.
-  rewrite <- add_assoc.
-  replace (bin_to_nat b' + 1) with (1 + bin_to_nat b').
-  + reflexivity.
-  + rewrite add_comm. reflexivity.
+  rewrite add_comm.
+  reflexivity.
   - simpl. 
   rewrite !add_0_r.
   rewrite IHb2'.
