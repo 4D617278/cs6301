@@ -969,12 +969,6 @@ Proof.
   - (* S n' *)
     simpl.  rewrite IHn'.  reflexivity.  Qed.
 
-Print remove_one.
-Search remove_one.
-
-Print count.
-Search count.
-
 (** Before doing the next exercise, make sure you've filled in the
    definition of [remove_one] above. *)
 (** **** Exercise: 3 stars, advanced (remove_does_not_increase_count) *)
@@ -983,7 +977,9 @@ Theorem remove_does_not_increase_count: forall (s : bag),
 Proof.
   induction s.
   - reflexivity.
-  - Show. simpl. Show. reflexivity.
+  - destruct n.
+  + simpl. rewrite leb_n_Sn. reflexivity.
+  + simpl. rewrite IHs. reflexivity.
 Qed.
 (** [] *)
 
@@ -996,9 +992,17 @@ Qed.
     [=?] you may find it useful to know that [destruct] works on
     arbitrary expressions, not just simple identifiers.)
 *)
-(* FILL IN HERE
 
-    [] *)
+Theorem bag_count_sum : forall n s1 s2,  
+  count n (sum s1 s2) = count n s1 + count n s2.
+Proof.
+  intros n s1 s2.
+  induction s1 as [| n' s1' IHs'].
+  - simpl. reflexivity.
+  - simpl. destruct (n' =? n).
+  + simpl. rewrite <- IHs'. reflexivity.
+  + rewrite <- IHs'. reflexivity.
+Qed.
 
 (** **** Exercise: 3 stars, advanced (involution_injective) *)
 
@@ -1010,7 +1014,13 @@ Qed.
 Theorem involution_injective : forall (f : nat -> nat),
     (forall n : nat, n = f (f n)) -> (forall n1 n2 : nat, f n1 = f n2 -> n1 = n2).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f H n1 n2 H2.
+  simpl. 
+  rewrite H. 
+  rewrite <- H2. 
+  rewrite <- H.
+  reflexivity.
+Qed.
 
 (** [] *)
 
@@ -1024,7 +1034,12 @@ Proof.
 Theorem rev_injective : forall (l1 l2 : natlist),
   rev l1 = rev l2 -> l1 = l2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2 H.
+  rewrite <- rev_involutive.
+  rewrite <- H.
+  rewrite rev_involutive.
+  reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -1095,17 +1110,20 @@ Definition option_elim (d : nat) (o : natoption) : nat :=
     Using the same idea, fix the [hd] function from earlier so we don't
     have to pass a default element for the [nil] case.  *)
 
-Definition hd_error (l : natlist) : natoption
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition hd_error (l : natlist) : natoption :=
+  match l with
+  | nil => None
+  | h::t => Some h
+  end.
 
 Example test_hd_error1 : hd_error [] = None.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Example test_hd_error2 : hd_error [1] = Some 1.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Example test_hd_error3 : hd_error [5;6] = Some 5.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 (** [] *)
 
@@ -1116,7 +1134,10 @@ Example test_hd_error3 : hd_error [5;6] = Some 5.
 Theorem option_elim_hd : forall (l:natlist) (default:nat),
   hd default l = option_elim default (hd_error l).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  destruct l.
+  - reflexivity.
+  - reflexivity.
+Qed.
 (** [] *)
 
 End NatList.
@@ -1150,7 +1171,9 @@ Definition eqb_id (x1 x2 : id) :=
 (** **** Exercise: 1 star, standard (eqb_id_refl) *)
 Theorem eqb_id_refl : forall x, eqb_id x x = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  destruct x.
+  - simpl. rewrite eqb_refl. reflexivity.
+Qed.
 (** [] *)
 
 (** Now we define the type of partial maps: *)
@@ -1196,7 +1219,9 @@ Theorem update_eq :
   forall (d : partial_map) (x : id) (v: nat),
     find x (update d x v) = Some v.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros d x v.
+  simpl. rewrite eqb_id_refl. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard (update_neq) *)
@@ -1204,7 +1229,9 @@ Theorem update_neq :
   forall (d : partial_map) (x y : id) (o: nat),
     eqb_id x y = false -> find x (update d y o) = find x d.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros d x y o H.
+  simpl. rewrite H. reflexivity.
+Qed.
 (** [] *)
 End PartialMap.
 
@@ -1219,7 +1246,7 @@ Inductive baz : Type :=
 (** How _many_ elements does the type [baz] have? (Explain in words,
     in a comment.) *)
 
-(* FILL IN HERE *)
+(* The type baz has Baz1 + 2 * Baz2 elements. *)
 
 (** [] *)
 
