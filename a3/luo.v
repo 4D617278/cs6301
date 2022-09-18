@@ -1,7 +1,7 @@
 (* CS6301: Assignment 3
 
-   Name:
-   Email:
+   Name: Brandon Luo
+   Email: bxl190001@utdallas.edu
 
  *)
 
@@ -84,34 +84,43 @@ Proof.
   reflexivity.
 Qed.
 
-Inductive boollist : Type :=
-  | nil
-  | cons (b : bool) (l : boollist).
 
-Notation "x :: l" := (cons x l)
-                     (at level 60, right associativity).
 
-Fixpoint app (l1 l2 : boollist) : boollist :=
-  match l1 with
-  | nil    => l2
-  | h :: t => h :: (app t l2)
-  end.
 
-Notation "x ++ y" := (app x y)
-                     (right associativity, at level 60).
+
+(*
+Fixpoint matches_cat (r1 r2 : rexp) (s : boollist) (n : nat) : bool :=
+	match (n leb (length s)), ((matches (firstn s) r1) && (matches (skipn s) r2)) with
+	| false, _ => false
+	| true, true => true
+	| false, true => matches_cat r1 r2 s (S n)
+	end.
+
+Definition state : Type :=
+  | Empty 
+  | Empty 
+  | Reject
+  | Accept
+
+Fixpoint accept (r : rexp) (b : bool) (s : state) : (s : state) :=
+*)
 
 (* 1. Define "matches" here. *)
-Fixpoint matches (r : rexp) (s : boollist) : bool :=
-  match s with
-  | nil => true
-  | h :: t => matches r t
+Fixpoint matches (r : rexp) (s : list bool) : bool :=
+  match r with
+  | Empty => false
+  | Epsilon => (Nat.eqb (length s) 0)
+  | Sym b => (Nat.eqb (length s) 1) && (bool_eq b (hd (negb b) s))
+  | Cat r1 r2 => true (* fix *)
+  | Plus r1 r2 => (matches r1 s) || (matches r2 s)
+  | Star r => true (* fix *)
   end.
 
 Theorem matches_plus_or:
   forall s r1 r2, matches (Plus r1 r2) s = matches r1 s || matches r2 s.
 Proof.
-  (* 2. Complete the proof. *)
-Admitted.
+  reflexivity.
+Qed.
 
 Theorem matches_app:
   forall s1 s2 r1 r2, matches r1 s1 = true -> matches r2 s2 = true ->
