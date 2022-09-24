@@ -84,47 +84,24 @@ Proof.
   reflexivity.
 Qed.
 
-
-
-
-
-(*
-Fixpoint matches_cat (r1 r2 : rexp) (s : boollist) (n : nat) : bool :=
-	match (n leb (length s)), ((matches (firstn s) r1) && (matches (skipn s) r2)) with
-	| false, _ => false
-	| true, true => true
-	| false, true => matches_cat r1 r2 s (S n)
-	end.
-
-Definition state : Type :=
-  | Empty 
-  | Empty 
-  | Reject
-  | Accept
-
-Fixpoint accept (r : rexp) (b : bool) (s : state) : (s : state) :=
-*)
-
 (* 1. Define "matches" here. *)
 Fixpoint matches (r : rexp) (s : list bool) : bool :=
-  match r with
-  | Empty => false
-  | Epsilon => (Nat.eqb (length s) 0)
-  | Sym b => (Nat.eqb (length s) 1) && (bool_eq b (hd (negb b) s))
-  | Cat r1 r2 => true (* fix *)
-  | Plus r1 r2 => (matches r1 s) || (matches r2 s)
-  | Star r => true (* fix *)
+  match s with
+  | nil => matches_nil r
+  | h :: t => matches (rem r h) t
   end.
 
 Theorem matches_plus_or:
   forall s r1 r2, matches (Plus r1 r2) s = matches r1 s || matches r2 s.
 Proof.
-  reflexivity.
+  induction s; intros.
+  - reflexivity.
+  - simpl. rewrite IHs. reflexivity.
 Qed.
 
 Theorem matches_app:
   forall s1 s2 r1 r2, matches r1 s1 = true -> matches r2 s2 = true ->
     matches (Cat r1 r2) (s1++s2) = true.
 Proof.
-  (* 3. Complete the proof. *)
-Admitted.
+  simpl. Show. reflexivity.
+Qed.
