@@ -81,9 +81,8 @@ Proof.
   intros b r H.
   simpl.
   rewrite -> H.
-  assert (H0: bool_eq b b = true).
-  { destruct b. reflexivity. reflexivity. }
-  rewrite H0.
+  rewrite b1_eq_b2.
+  rewrite eqb_reflx.
   reflexivity.
 Qed.
 
@@ -95,8 +94,7 @@ Fixpoint matches (r : rexp) (s : list bool) : bool :=
   end.
 
 Theorem matches_plus_or:
-  forall s r1 r2, matches (Plus r1 r2) s = matches r1 s || matches r2 s.
-Proof.
+  forall s r1 r2, matches (Plus r1 r2) s = matches r1 s || matches r2 s.  Proof.
   induction s; intros.
   - reflexivity.
   - simpl. rewrite IHs. reflexivity.
@@ -106,5 +104,45 @@ Theorem matches_app:
   forall s1 s2 r1 r2, matches r1 s1 = true -> matches r2 s2 = true ->
     matches (Cat r1 r2) (s1++s2) = true.
 Proof.
-  simpl. Show. reflexivity.
+  induction s1; intros.
+  - destruct s2; intros.
+  + simpl.
+  unfold matches in H. 
+  unfold matches in H0.
+  rewrite H.
+  rewrite H0.
+  reflexivity.
+  + simpl. 
+  unfold matches in H.
+  rewrite H.
+  simpl.
+  rewrite matches_plus_or.
+  simpl in H0.
+  rewrite H0.
+  reflexivity.
+  - simpl. 
+  destruct (matches_nil r1).
+  + simpl. 
+  rewrite matches_plus_or. 
+  specialize IHs1 with (r1 := (rem r1 a)).
+  specialize IHs1 with (r2 := r2).
+  specialize IHs1 with (s2 := s2).
+  rewrite IHs1.
+  rewrite orb_true_r.
+  reflexivity.
+  simpl in H.
+  rewrite H.
+  reflexivity.
+  rewrite H0.
+  reflexivity.
+  + specialize IHs1 with (r1 := (rem r1 a)).
+  specialize IHs1 with (r2 := r2).
+  specialize IHs1 with (s2 := s2).
+  rewrite IHs1.
+  reflexivity.
+  simpl in H.
+  rewrite H.
+  reflexivity.
+  rewrite H0.
+  reflexivity.
 Qed.
