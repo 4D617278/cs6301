@@ -950,22 +950,31 @@ Qed.
     of strengths and limitations. *)
 
 (** **** Exercise: 3 stars, standard (In_map_iff) *)
+Lemma and_distributes_over_or : forall P1 P2 P3 : Prop,
+  P1 /\ (P2 \/ P3) <-> (P1 /\ P2) \/ (P1 /\ P3).
+Proof.
+  intros P1 P2 P3.
+  split.
+  - intros. destruct H as [H1 H2]. destruct H2. left. split. 
+  apply H1. apply H. right. split. apply H1. apply H.
+  - intros. destruct H. destruct H. split. apply H. left. apply H0.
+  destruct H. split. apply H. right. apply H0.
+Qed.
+
 Theorem In_map_iff :
   forall (A B : Type) (f : A -> B) (l : list A) (y : B),
          In y (map f l) <->
          exists x, f x = y /\ In x l.
 Proof.
-  (*
   intros A B f l y. split.
   - induction l as [|x' l' IHl'].
   + simpl. intros [].
   + simpl. intros [H | H].
     exists x'. rewrite H. split. reflexivity. left. reflexivity.
-    apply IHl' in H. destruct H eqn:e2. exists x.
-      
-  Show.
-  *)
-Admitted.
+    apply IHl' in H. destruct H eqn:e2. exists x. 
+  apply and_distributes_over_or. right. apply a.
+  - intros [H H1]. destruct H1 as [H1 H2]. rewrite <- H1. apply In_map. apply H2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (In_app_iff) *)
