@@ -1747,19 +1747,24 @@ Fixpoint forallb {X : Type} (test : X -> bool) (l : list X) : bool :=
 Theorem forallb_true_iff : forall X test (l : list X),
   forallb test l = true <-> All (fun x => test x = true) l.
 Proof.
-  (*
   intros X test l.
   split.
-  - intros H. unfold All. unfold forallb in H.
-  Show.
-  *)
-Admitted.
+  - intros H. rewrite <- All_In. intros H1 H2. induction l; intros.
+  + simpl in *. contradiction.
+  + simpl in *. rewrite andb_true_iff in H. destruct H. 
+  destruct H2. rewrite H2 in H. apply H. apply IHl in H0. apply H0. apply H2.
+  - intros H. rewrite <- All_In in H. induction l; intros.
+  + simpl in *. reflexivity.
+  + simpl in *. rewrite andb_true_iff. split.
+    apply H. left. reflexivity.
+    apply IHl. intros H2 H3. apply H with (x := H2). right. apply H3.
+Qed.
 
 (** (Ungraded thought question) Are there any important properties of
     the function [forallb] which are not captured by this
     specification? *)
 
-(* FILL IN HERE
+(* No
 
     [] *)
 
@@ -1894,7 +1899,14 @@ Qed.
 Theorem excluded_middle_irrefutable: forall (P : Prop),
   ~ ~ (P \/ ~ P).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P H.
+  apply (de_morgan_not_or (P) (~P)).
+  apply H.
+  unfold not in *.
+  intros H1.
+  apply H.
+  left. apply H1.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced (not_exists_dist)
@@ -1915,7 +1927,14 @@ Theorem not_exists_dist :
   forall (X:Type) (P : X -> Prop),
     ~ (exists x, ~ P x) -> (forall x, P x).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  unfold excluded_middle in H.
+  unfold not in H0.
+  destruct H with (P := P x).
+  - apply H1.
+  - unfold not in H1.
+  exfalso. apply H0. exists x. apply H1.
+Qed.
 (** [] *)
 
 (** **** Exercise: 5 stars, standard, optional (classical_axioms)
