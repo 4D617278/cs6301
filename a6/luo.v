@@ -113,8 +113,7 @@ Proof.
 Qed.
 
 Inductive Matches {A:Set} : @rexp A -> list A -> Prop :=
-| MEpsilon: Matches Epsilon nil
-| MSym (a:A): Matches (Sym a) (a::nil)
+| MEpsilon: Matches Epsilon nil | MSym (a:A): Matches (Sym a) (a::nil)
 | MCat r1 r2 s1 s2 (M1: Matches r1 s1) (M2: Matches r2 s2):
 Matches (Cat r1 r2) (s1++s2)
 | MPlus1 r1 r2 s (M: Matches r1 s): Matches (Plus r1 r2) s
@@ -143,7 +142,8 @@ Proof.
   + inversion H.
   + reflexivity. 
   + inversion H. 
-  + simpl. inversion H. apply app_eq_nil in H3. destruct H3. rewrite H0 in M1. rewrite H3 in M2. apply andb_true_intro. split.
+  + simpl. inversion H. apply app_eq_nil in H3. destruct H3. rewrite H0 in M1. 
+  rewrite H3 in M2. apply andb_true_intro. split.
   * apply IHr1. apply M1.
   * apply IHr2. apply M2.
   + simpl. apply orb_true_intro. inversion H. 
@@ -152,12 +152,34 @@ Proof.
   + reflexivity.
 Qed.
 
+(*
+Search rem.
+Print rem.
+*)
+Print Matches.
 Theorem Matches_rem:
   forall (A:Set) (eq:eqdec A) a r s, Matches r (a::s) <-> Matches (rem eq r a) s.
 Proof.
+  intros.
+  split.
+  - induction r; intros.
+  + inversion H.
+  + inversion H.
+  + simpl. rewrite b1_eq_b2. inversion H. rewrite eqb_reflx. apply MEpsilon.
+  + (* remember (matches_nil r1) as e. destruct e. symmetry in Heqe. rewrite Matches_nil in Heqe. apply MPlus1. apply IHr2. *)
+
+  (* destruct s1. rewrite <- Matches_nil in M1. rewrite M1. simpl in *. apply MPlus1. apply IHr2. rewrite <- H3. apply M2. *)
 Admitted.
 
+Print matches.
 Theorem Matches_matches:
   forall (A:Set) (eq:eqdec A) s r, matches eq r s = true <-> Matches r s.
 Proof.
-Admitted.
+  split.
+  - generalize dependent r. induction s; intros.
+  + rewrite <- Matches_nil. apply H.
+  + simpl in *. rewrite (@Matches_rem A eq). apply IHs. apply H.
+  - generalize dependent r. induction s; intros.
+  + simpl. rewrite Matches_nil. apply H.
+  + simpl in *. apply IHs. rewrite <- Matches_rem. apply H.
+Qed.
