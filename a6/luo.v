@@ -152,26 +152,49 @@ Proof.
   + reflexivity.
 Qed.
 
-(*
 Search rem.
 Print rem.
-*)
 Print Matches.
 Theorem Matches_rem:
   forall (A:Set) (eq:eqdec A) a r s, Matches r (a::s) <-> Matches (rem eq r a) s.
 Proof.
   intros.
   split.
-  - induction r; intros.
+  - generalize dependent s. induction r; intros.
   + inversion H.
   + inversion H.
   + simpl. rewrite b1_eq_b2. inversion H. rewrite eqb_reflx. apply MEpsilon.
-  + (* remember (matches_nil r1) as e. destruct e. symmetry in Heqe. rewrite Matches_nil in Heqe. apply MPlus1. apply IHr2. *)
 
-  (* destruct s1. rewrite <- Matches_nil in M1. rewrite M1. simpl in *. apply MPlus1. apply IHr2. rewrite <- H3. apply M2. *)
-Admitted.
+  + simpl. inversion H. destruct s1. rewrite <- Matches_nil in M1. rewrite M1. simpl in *. apply MPlus1. apply IHr2. rewrite <- H3. apply M2.
+  * destruct (matches_nil r1) eqn:e. 
+  apply MPlus2. inversion H3. apply (MCat (rem eq r1 a) r2 s1 s2). apply IHr1. rewrite H4 in M1. apply M1.
+  apply M2.
+  inversion H3. apply (MCat (rem eq r1 a) r2 s1 s2). apply IHr1. rewrite H4 in M1. apply M1. apply M2.
 
-Print matches.
+  + simpl in *. inversion H. 
+  * apply MPlus1. apply IHr1. apply M.
+  * apply MPlus2. apply IHr2. apply M.
+
+  + simpl in *. inversion H. apply (MCat (rem eq r a) (Star r) s1 s2).
+  * apply IHr. apply M0.
+  * apply M.
+
+  - generalize dependent s. induction r; intros.
+  + inversion H.
+  + inversion H.
+  + simpl in *. rewrite b1_eq_b2 in H. destruct (eqb A0 a) eqn:e. inversion H.   * rewrite eqb_true_iff in e. rewrite e. apply MSym.
+  * inversion H.
+  + simpl in *. destruct (matches_nil r1) eqn:e in H. inversion H. apply (MCat r1 r2 nil (a :: s)). 
+  * rewrite <- Matches_nil. apply e.
+  * apply IHr2. apply M.
+  * inversion M. apply IHr1 in M1. apply (MCat r1 r2 (a :: s1) s2). apply M1. apply M2.
+  * inversion H. apply IHr1 in M1. apply (MCat r1 r2 (a :: s1) s2). apply M1. apply M2.
+  + simpl in *. inversion H. apply IHr1 in M. apply MPlus1. apply M. apply IHr2 in M. apply MPlus2. apply M.
+  + simpl in *. inversion H. apply MStar. 
+  * apply IHr in M1. apply M1.
+  * apply M2.
+Qed.
+
 Theorem Matches_matches:
   forall (A:Set) (eq:eqdec A) s r, matches eq r s = true <-> Matches r s.
 Proof.
