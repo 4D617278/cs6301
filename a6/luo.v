@@ -152,9 +152,6 @@ Proof.
   + reflexivity.
 Qed.
 
-Search rem.
-Print rem.
-Print Matches.
 Theorem Matches_rem:
   forall (A:Set) (eq:eqdec A) a r s, Matches r (a::s) <-> Matches (rem eq r a) s.
 Proof.
